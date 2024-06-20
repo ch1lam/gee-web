@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"gee-web/gee"
-	"html/template"
 	"log"
 	"net/http"
 	"time"
@@ -31,33 +30,49 @@ func onlyForV2() gee.HandlerFunc {
 }
 
 func main() {
-	r := gee.New()
-	r.Use(gee.Logger()) // global middleware
-	r.SetFuncMap(template.FuncMap{
-		"FormatAsDate": FormatAsDate,
-	})
-	r.LoadHTMLGlob("templates/*")
-	r.Static("/assets", "./static")
 
-	stu1 := &student{Name: "Geektutu", Age: 20}
-	stu2 := &student{Name: "Jack", Age: 22}
-
+	r := gee.Default()
 	r.GET("/", func(c *gee.Context) {
-		c.HTML(http.StatusOK, "css.tmpl", nil)
+		c.String(http.StatusOK, "Hello Geektutu\n")
 	})
-	r.GET("/students", func(c *gee.Context) {
-		c.HTML(http.StatusOK, "arr.tmpl", gee.H{
-			"title":  "gee",
-			"stuArr": [2]*student{stu1, stu2},
-		})
+	// index out of range for testing Recovery()
+	r.GET("/panic", func(c *gee.Context) {
+		names := []string{"geektutu"}
+		c.String(http.StatusOK, names[100])
 	})
 
-	r.GET("/date", func(c *gee.Context) {
-		c.HTML(http.StatusOK, "custom_func.tmpl", gee.H{
-			"title": "gee",
-			"now":   time.Date(2019, 8, 17, 0, 0, 0, 0, time.UTC),
-		})
-	})
+	//r := gee.New()
+	//r.Use(gee.Logger()) // global middleware
+	//r.SetFuncMap(template.FuncMap{
+	//	"FormatAsDate": FormatAsDate,
+	//})
+	//r.LoadHTMLGlob("templates/*")
+	//r.Static("/assets", "./static")
+	//
+	//stu1 := &student{Name: "Geektutu", Age: 20}
+	//stu2 := &student{Name: "Jack", Age: 22}
+	//
+	//r.GET("/panic", func(c *gee.Context) {
+	//	names := []string{"geektutu"}
+	//	c.String(http.StatusOK, names[100])
+	//})
+	//r.GET("/", func(c *gee.Context) {
+	//	c.HTML(http.StatusOK, "css.tmpl", nil)
+	//})
+	//r.GET("/students", func(c *gee.Context) {
+	//	c.HTML(http.StatusOK, "arr.tmpl", gee.H{
+	//		"title":  "gee",
+	//		"stuArr": [2]*student{stu1, stu2},
+	//	})
+	//})
+	//
+	//r.GET("/date", func(c *gee.Context) {
+	//	c.HTML(http.StatusOK, "custom_func.tmpl", gee.H{
+	//		"title": "gee",
+	//		"now":   time.Date(2019, 8, 17, 0, 0, 0, 0, time.UTC),
+	//	})
+	//})
+
 	//v1 := r.Group("/v1")
 	//{
 	//	v1.GET("/", func(c *gee.Context) {
